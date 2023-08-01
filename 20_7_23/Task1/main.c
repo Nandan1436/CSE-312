@@ -1,60 +1,84 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
-#include <string.h>
-
-int findLength(char *binString){
-    int length=0;
-    for(int i=0;binString[i]!='\0';i++){
-        length++;
-    }
-    return length;
-}
 
 int main()
 {
-    srand(time(0));
-    int i,j,numOfStrings=5,strLen,check;
-    char binString[numOfStrings][51],userString[50],userString1[50],userString2[50],answer[110];
+    int numOfSymbols,numOfStates,i,j,k,x;
+    printf("Enter number of states: ");
+    scanf("%d",&numOfStates);
+    char states[numOfStates],null;
+    scanf("%c",&null);
+    printf("Enter set of states,Q: \n");
+    for(i=0; i<numOfStates; i++)
+    {
+        scanf("%c",&states[i]);
+        scanf("%c",&null);
+    }
 
-    for(i=0;i<numOfStrings;i++){
-        strLen=rand()%50+1;
-        for(j=0;j<strLen;j++){
-            binString[i][j]=rand()%2+'0';
+    printf("Enter number of symbols: ");
+    scanf("%d",&numOfSymbols);
+    char symbols[numOfSymbols];
+    scanf("%c",&null);
+    printf("Enter set of symbols: \n");
+    for(i=0; i<numOfSymbols; i++)
+    {
+        scanf("%c",&symbols[i]);
+        scanf("%c",&null);
+    }
+    char list[numOfStates][numOfSymbols],start,end,string[100],temp;
+    for(i=0; i<numOfStates; i++)
+    {
+        printf("Enter transitions for %c when:\n",states[i]);
+        for(j=0; j<numOfSymbols; j++)
+        {
+            printf("%c: ",symbols[j]);
+            scanf("%c",&list[i][j]);
+            scanf("%c",&null);
         }
-        binString[i][j]='\0';
-    }
-    printf("The %d strings with their length are: \n",numOfStrings);
-    for(i=0;i<numOfStrings;i++){
-        printf("String: %s , length: %d\n",binString[i],findLength(binString[i]));
     }
 
-    check=1;
-    printf("Enter string : ");
-    scanf("%s",userString);
-    for(i=0;i<findLength(userString);i++){
-        if(userString[i]!='0' && userString[i]!='1'){
-            printf("The given string is not from the alphabet.\n");
-            check=0;
-            break;
+    printf("Enter start and final states: \n");
+    printf("Start state: ");
+    scanf("%c",&start);
+    scanf("%c",&null);
+    printf("Final state: ");
+    scanf("%c",&end);
+    scanf("%c",&null);
+    temp=start;
+    int t;
+    scanf("%d",&t);
+    while(t--)
+    {
+        printf("Enter input string: ");
+        scanf("%s", string);
+        char path[500];
+        path[0]=start;
+        x=1;
+        for(i=0; i<string[i]; i++)
+        {
+            for(j=0; j<numOfStates; j++)
+            {
+                if(start==states[j])break;
+            }
+            for(k=0; k<numOfSymbols; k++)
+            {
+                if(string[i]==symbols[k])
+                {
+                    start=list[j][k];
+                    break;
+                }
+            }
+            path[x++]='-';
+            path[x++]='>';
+            path[x++]=start;
         }
-    }
-    if(check)printf("The given string is from the alphabet.\n");
+        path[x]=NULL;
+        if(start==end)printf("Accepted\n");
+        else printf("Rejected\n");
+        printf("%s\n",path);
+        start=temp;
 
-
-    printf("Enter the two strings: ");
-    scanf("%s %s",userString1,userString2);
-    j=findLength(userString1);
-    for(i=0;i<findLength(userString1);i++){
-        answer[i]=userString1[i];
     }
-    j=findLength(userString1);
-    for(i=0;i<findLength(userString2);i++){
-        answer[j++]=userString2[i];
-    }
-    answer[findLength(userString1) + findLength(userString2)]='\0';
-    printf("The concatenated string is: %s\n",answer);
-
 
     return 0;
 }
