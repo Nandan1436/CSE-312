@@ -4,30 +4,33 @@ using namespace std;
 
 char transition[100][100][100];
 int numOfStates,numOfSymbols;
+int check=0;
+string ans;
 
 void nfa(char startState,char finalState,string inputString,int curr,char *symbols,char *states,string path)
 {
-    if(inputString[curr]!=NULL && startState=='X'){
-        cout<<"Rejected ";
-        cout<<path<<endl;
+    if(startState=='X'){
+        //cout<<"Rejected ";
+        //cout<<path<<endl;
         return;
     }
-    else
-    {
+
         path+=startState;
         if(inputString[curr]==NULL && startState!='C')
         {
-            cout<<"Rejected ";
-            cout<<path<<endl;
+            //cout<<"Rejected ";
+            //cout<<path<<endl;
             return;
         }
         if(inputString[curr]==NULL && startState==finalState)
         {
-            cout<<"Accepted ";
-            cout<<path<<endl;
+            //cout<<"Accepted ";
+            //cout<<path<<endl;
+            ans=path;
+            check=1;
             return;
         }
-        int i,j,k,x;
+        int j,k,x;
         for(j=0; j<numOfStates; j++)
         {
             if(startState==states[j])break;
@@ -40,7 +43,7 @@ void nfa(char startState,char finalState,string inputString,int curr,char *symbo
         {
             nfa(transition[j][k][x],finalState,inputString,curr+1,symbols,states,path);
         }
-    }
+
 
 }
 
@@ -71,7 +74,9 @@ int main()
     cin>>startState>>finalState;
     cin>>inputString;
     nfa(startState,finalState,inputString,0,symbols,states,"");
-
+    //cout<<endl;
+    if(check)cout<<"Accepted"<<" "<<ans<<endl;
+    else cout<<"Rejected"<<endl;
 
     return 0;
 }
