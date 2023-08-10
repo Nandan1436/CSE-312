@@ -16,7 +16,7 @@ void nfa(char startState,char finalState,string inputString,int curr,char *symbo
     }
 
         path+=startState;
-        if(inputString[curr]==NULL && startState!='C')
+        if(inputString[curr]==NULL && startState!=finalState)
         {
             //cout<<"Rejected ";
             //cout<<path<<endl;
@@ -43,7 +43,6 @@ void nfa(char startState,char finalState,string inputString,int curr,char *symbo
         {
             nfa(transition[j][k][x],finalState,inputString,curr+1,symbols,states,path);
         }
-
 
 }
 
