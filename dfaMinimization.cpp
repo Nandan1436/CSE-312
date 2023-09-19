@@ -85,8 +85,8 @@ int main()
         cout<<endl;
     }
 
-    vector<set<char>>tempStates;
-    vector<vector<char>>transition;
+    vector< set<char> >tempStates;
+    vector< vector<char> >transition;
     vector<char>newStates;
     for(i=0;i<numOfStates-1;i++)
     {
@@ -97,39 +97,65 @@ int main()
                 temp.insert(states[j]);
             }
         }
-        tempStates.push_back(temp);
+        if(temp.size()>0)tempStates.push_back(temp);
     }
+    cout<<tempStates.size()<<endl;
 
     for(i=0;i<tempStates.size();i++){
         vector<char>temp1;
-        int pos1,pos2;
-        auto x=tempStates[i].begin();
-        for(j=0;j<numOfStates;j++){
-            if(states[j]==*x){
-                pos1=j;
-                x++;
-            }
-            if(states[j]==*x){
-                pos2=j;
-                break;
+        int pos=-1;
+        set<char>::iterator x = tempStates[i].begin();
+        for(;x!=tempStates[i].end();x++){
+            for(j=0;j<numOfStates;j++){
+                if(states[j]==*x){
+                    if(pos==-1)pos=j;
+                    states[j]='X';
+                }
             }
         }
+
         for(j=0;j<numOfSymbols;j++){
-            temp1.push_back(dfa[pos1][j]);
+            temp1.push_back(dfa[pos][j]);
         }
         transition.push_back(temp1);
-        states[pos1]=states[pos2]='X';
+    }
+    cout<<transition.size()<<endl;
+
+    for(i=0;i<transition.size();i++){
+        for(j=0;j<numOfSymbols;j++){
+            cout<<transition[i][j]<<" ";
+        }
+        cout<<endl;
     }
 
     for(i=0;i<numOfStates;i++){
-        vector<char>temp1;
         if(states[i]!='X'){
+            vector<char>temp1;
             for(j=0;j<numOfSymbols;j++){
-                temp1.push_back(dfa[i][j]);
+                int pos = findindex(dfa[i][j],states,numOfStates);
+                if(pos<numOfStates && states[pos]!='X'){
+                    cout<<dfa[i][j]<<endl;
+                    temp1.push_back(dfa[i][j]);
+                }
+                else {
+                    for(k=0;k<tempStates.size();k++){
+                        set<char>::iterator itr=tempStates[k].find(dfa[i][j]);
+                        if(itr!=tempStates[k].end()){
+                            itr=tempStates[k].begin();
+                            cout<<*itr<<endl;
+                            char ch=*itr;
+                            temp1.push_back(ch);
+                            break;
+                        }
+                    }
+                    if(k==tempStates.size())temp1.push_back(dfa[i][j]);
+                }
             }
+            transition.push_back(temp1);
+            states[i]='X';
         }
-        transition.push_back(temp1);
     }
+    cout<<transition.size()<<endl;
 
     char ch='A';
     for(i=0;i<transition.size();i++){
