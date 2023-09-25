@@ -18,7 +18,7 @@ int findindex(char x,char states[],int n)
 
 int main()
 {
-    freopen("mini.txt","r",stdin);
+    freopen("mini2.txt","r",stdin);
 
     int numOfStates,numOfSymbols,i,j,k;
     cin>>numOfStates>>numOfSymbols;
@@ -76,6 +76,7 @@ int main()
         }
     }
 
+    cout<<"Table: "<<endl;
     for(i=1; i<numOfStates; i++)
     {
         for(j=0; states[i]!=states[j]; j++)
@@ -88,6 +89,13 @@ int main()
     vector< set<char> >tempStates;
     vector< vector<char> >transition;
     vector<char>newStates;
+    char newStartState,newEndState;
+    char statesCopy[numOfStates];
+    for(i=0;i<numOfStates;i++)
+    {
+        statesCopy[i]=states[i];
+    }
+
     for(i=0;i<numOfStates-1;i++)
     {
         set<char>temp;
@@ -95,72 +103,52 @@ int main()
             if(table[j][i]=='='){
                 temp.insert(states[i]);
                 temp.insert(states[j]);
+                statesCopy[i]=statesCopy[j]='X';
             }
         }
         if(temp.size()>0)tempStates.push_back(temp);
     }
-    cout<<tempStates.size()<<endl;
+
+    for(i=0;i<numOfStates;i++)
+    {
+        if(statesCopy[i]!='X')
+        {
+            set<char>temp;
+            temp.insert(statesCopy[i]);
+            tempStates.push_back(temp);
+        }
+    }
 
     for(i=0;i<tempStates.size();i++){
+        set<char>::iterator itr=tempStates[i].begin();
+        newStates.push_back(*itr);
+        if(*itr==startState)newStartState=*itr;
+        if(*itr==endState)newEndState=*itr;
+    }
+
+    for(i=0;i<tempStates.size();i++)
+    {
         vector<char>temp1;
-        int pos=-1;
         set<char>::iterator x = tempStates[i].begin();
+        int pos=-1;
         for(;x!=tempStates[i].end();x++){
             for(j=0;j<numOfStates;j++){
-                if(states[j]==*x){
-                    if(pos==-1)pos=j;
-                    states[j]='X';
-                }
+                if(states[j]==*x)pos=j;
             }
         }
-
         for(j=0;j<numOfSymbols;j++){
-            temp1.push_back(dfa[pos][j]);
+            char tempState=dfa[pos][j];
+            for(k=0;k<tempStates.size();k++){
+                set<char>::iterator itr=tempStates[k].find(tempState);
+                if(itr!=tempStates[k].end()){
+                //     temp1.push_back(newStates[k]);
+                     temp1.push_back(*tempStates[k].begin());
+                }
+            }
         }
         transition.push_back(temp1);
     }
-    cout<<transition.size()<<endl;
 
-    for(i=0;i<transition.size();i++){
-        for(j=0;j<numOfSymbols;j++){
-            cout<<transition[i][j]<<" ";
-        }
-        cout<<endl;
-    }
-
-    for(i=0;i<numOfStates;i++){
-        if(states[i]!='X'){
-            vector<char>temp1;
-            for(j=0;j<numOfSymbols;j++){
-                int pos = findindex(dfa[i][j],states,numOfStates);
-                if(pos<numOfStates && states[pos]!='X'){
-                    cout<<dfa[i][j]<<endl;
-                    temp1.push_back(dfa[i][j]);
-                }
-                else {
-                    for(k=0;k<tempStates.size();k++){
-                        set<char>::iterator itr=tempStates[k].find(dfa[i][j]);
-                        if(itr!=tempStates[k].end()){
-                            itr=tempStates[k].begin();
-                            cout<<*itr<<endl;
-                            char ch=*itr;
-                            temp1.push_back(ch);
-                            break;
-                        }
-                    }
-                    if(k==tempStates.size())temp1.push_back(dfa[i][j]);
-                }
-            }
-            transition.push_back(temp1);
-            states[i]='X';
-        }
-    }
-    cout<<transition.size()<<endl;
-
-    char ch='A';
-    for(i=0;i<transition.size();i++){
-        newStates.push_back(ch++);
-    }
     cout<<"New States: ";
     for(i=0;i<transition.size();i++){
         cout<<newStates[i]<<" ";
@@ -179,6 +167,8 @@ int main()
         }
         cout<<endl;
     }
+    cout<<"Start state: "<<newStartState<<endl;
+    cout<<"End state: "<<newEndState<<endl;
 
     return 0;
 }
